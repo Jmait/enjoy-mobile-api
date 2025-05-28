@@ -33,6 +33,7 @@ export class AuthService {
     };
   }
 
+  
   async signUp(signUpDto: SignUpDto) {
     // Check if user already exists
     const existingUser = await this.userRepository.findOne({ 

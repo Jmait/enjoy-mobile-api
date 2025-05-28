@@ -14,16 +14,30 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Get('check-email')
+  @Post('check-email')
   @ApiOperation({ summary: 'Check if email exists' })
   @ApiResponse({ status: 200, description: 'Email check result' })
-  async checkEmail(@Query() checkEmailDto: CheckEmailDto) {
+  async checkEmail(@Body() checkEmailDto: CheckEmailDto) {
     return this.authService.checkEmail(checkEmailDto.email);
   }
-
   @Post('signup')
   @ApiOperation({ summary: 'Create new user account' })
-  @ApiResponse({ status: 201, description: 'User successfully created' })
+  @ApiResponse({ 
+    status: 201, 
+    description: 'User successfully created',
+    schema: {
+      example: {
+        user: {
+          firstName: "Jean",
+          lastName: "Dupont",
+          email: "jean.dupont@gmail.com",
+          phone: "0612345678",
+          birthYear: 1990
+        }
+      }
+    }
+  
+  })
   @ApiResponse({ status: 409, description: 'Email already exists' })
   async signUp(@Body() signUpDto: SignUpDto) {
     return this.authService.signUp(signUpDto);
