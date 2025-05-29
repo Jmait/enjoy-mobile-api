@@ -41,6 +41,7 @@ export class AuthService {
     });
     
     if (existingUser) {
+   
       throw new ConflictException('Un compte existe déjà avec cette adresse e-mail');
     }
 
