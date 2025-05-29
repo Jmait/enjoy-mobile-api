@@ -23,6 +23,24 @@ export class Booking {
   @Column()
   destinationLocation: string;
 
+    @Column()
+  departureLat: number;
+
+  @Column()
+  destinationLat: number;
+
+     @Column()
+  departureLng: number;
+
+  @Column()
+  destinationLng: number;
+
+     @Column()
+  distance: number;
+
+  @Column()
+  time: number;
+
   @Column({ type: 'timestamptz' })
   tripDateTime: Date;
 

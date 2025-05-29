@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, Max, Min } from 'class-validator';
+import { IsBoolean, IsDateString, IsDecimal, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, Max, Min } from 'class-validator';
 import {  Languages, PaymentMethod, VehicleTypes } from 'src/common/enum';
 
 
@@ -9,6 +9,30 @@ export class CreateBookingDto {
   @IsString()
   @IsNotEmpty()
   departureLocation: string;
+
+  @ApiProperty()
+  @IsDecimal()
+  departureLat:number
+
+  @ApiProperty()
+  @IsDecimal()
+   departureLng:number
+
+   @ApiProperty()
+  @IsDecimal()
+  destinationLat:number
+
+   @ApiProperty()
+  @IsDecimal()
+  destinationLng:number
+
+  @ApiProperty()
+  @IsNumber()
+  distance:number
+
+  @ApiProperty()
+  @IsNumber()
+  time:number
 
   @ApiProperty()
   @IsString()

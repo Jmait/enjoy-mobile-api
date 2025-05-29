@@ -199,4 +199,31 @@ export class AuthService {
   async findById(id: string): Promise<User> {
     return this.userRepository.findOne({ where: { id } });
   }
+
+  async changePassword(userId: string, currentPassword: string, newPassword: string) {
+  // Find the user
+  const user = await this.userRepository.findOne({ where: { id: userId } });
+
+  if (!user) {
+    throw new NotFoundException('Utilisateur non trouvé');
+  }
+
+  // Verify the current password
+  const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+  if (!isPasswordValid) {
+    throw new UnauthorizedException('Mot de passe actuel incorrect');
+  }
+
+  // Hash the new password
+  const hashedNewPassword = await bcrypt.hash(newPassword, 12);
+
+  // Update the password
+  user.password = hashedNewPassword;
+  await this.userRepository.save(user);
+
+  return {
+    message: 'Mot de passe mis à jour avec succès',
+  };
+}
+
 }
