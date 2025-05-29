@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Query, UseGuards, Request, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, UseGuards, Request, Patch, Param, Delete, Put } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/sign-up.dto';
@@ -9,6 +9,7 @@ import { CheckEmailDto } from './dto/check-email.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { PaginationQueryDto } from './dto/pagination.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 
 @ApiTags('Authentication')
@@ -80,7 +81,15 @@ export class AuthController {
       user: req.user,
     };
   }
-
+@Put(':userId/me')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
+async updateMe(
+  @Param('userId') userId:string,
+  @Body() updateUserDto: UpdateUserDto
+) {
+  return this.authService.updateUser(userId, updateUserDto);
+}
   @Patch('change-password/:userId')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
@@ -94,7 +103,7 @@ async changePassword(
     changePasswordDto.newPassword,
   );
 }
-@Get()
+@Get('/users/all')
 async getAllUsers(@Query() query: PaginationQueryDto) {
   return this.authService.findAllUsers(query.page, query.limit);
 }

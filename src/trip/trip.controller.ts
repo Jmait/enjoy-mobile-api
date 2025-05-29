@@ -1,12 +1,12 @@
 import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards,Request } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateBookingDto } from "./dto/bookings.dto";
 import { Booking } from "./entities/booking.entity";
 import { BookingService } from "./trip.service";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { SearchBookingDto } from "./dto/search.dto";
-import { CancelBookingRequestDto } from "./dto/cancellation.dto";
-
+import { CancelBookingRequestDto, HandleCancellationDto } from "./dto/cancellation.dto";
+@ApiTags('Bookings')
 @Controller('bookings')
 export class TripBookingController {
     constructor(
@@ -96,6 +96,11 @@ async findAllBooking(@Query()dto:SearchBookingDto){
     return await this.bookingService.findAll(dto)
 }
 
+@Get('/:customerId/history')
+async findTripHistory(@Query()dto:SearchBookingDto, @Param('customerId')customerId:string){
+    return await this.bookingService.usertripHistory(dto, customerId)
+}
+
   @Patch('/:bookingId')
    @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -133,7 +138,8 @@ async completePayment(@Param('bookingId')bookingId:string){
  return this.bookingService.completePayment(bookingId)
 }
 
-@Post('bookings/:bookingId/cancel-request')
+@Post('/:bookingId/cancel-request')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 async requestCancel(
   @Param('id') bookingId: string,
@@ -141,6 +147,16 @@ async requestCancel(
   @Body() dto: CancelBookingRequestDto,
 ) {
   return this.bookingService.requestCancellation(bookingId, req.user.id, dto);
+}
+
+@Post('/adming/:bookingId/handle-cancellation')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard) 
+async handleCancel(
+  @Param('bookingId') bookingId: string,
+  @Body() dto: HandleCancellationDto,
+) {
+  return this.bookingService.handleCancellation(bookingId, dto);
 }
 
 }

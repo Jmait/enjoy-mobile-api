@@ -162,6 +162,22 @@ async create(createBookingDto: CreateBookingDto): Promise<{ booking: Booking; cl
   };
 }
 
+async usertripHistory(searchDto: SearchBookingDto, customerId:string) {
+    const { page = 1, limit = 10, } = searchDto;
+  const [data, total] = await this.bookingRepository.findAndCount({
+    where:{customerId},
+    order: { createdAt: 'DESC' },
+    take: limit,
+    skip: (page - 1) * limit,
+  });
+  return {
+    data,
+    total,
+    page,
+    limit,
+  };
+
+  }
 
 
 

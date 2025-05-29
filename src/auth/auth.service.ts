@@ -12,6 +12,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { User } from './entities/user.entity';
 import { PasswordReset } from './entities/password-reset.entity';
 import { EmailService } from 'src/email/email.service';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -261,6 +262,29 @@ async suspendUser(id: string): Promise<{ message: string }> {
     await this.userRepository.save(user);
     return { message: 'Utilisateur supprimé avec succès' };
   }
+// src/users/user.service.ts
+async updateUser(userId: string, updateUserDto: UpdateUserDto) {
+  const user = await this.userRepository.findOne({ where: { id: userId } });
+
+  if (!user) {
+    throw new NotFoundException('Utilisateur non trouvé');
+  }
+
+  Object.assign(user, updateUserDto);
+  await this.userRepository.save(user);
+
+  return {
+    message: 'Informations mises à jour avec succès',
+    user: {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      phone: user.phone,
+      birthYear: user.birthYear,
+    },
+  };
+}
 
 
 }
