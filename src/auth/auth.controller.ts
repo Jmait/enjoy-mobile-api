@@ -82,6 +82,7 @@ export class AuthController {
 
   @Patch('change-password/:userId')
 @UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 async changePassword(
    @Param('userId')userId:string,
   @Body() changePasswordDto: ChangePasswordDto,
