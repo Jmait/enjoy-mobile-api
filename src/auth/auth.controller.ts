@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Query, UseGuards, Request, Patch, Param } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, UseGuards, Request, Patch, Param, Delete } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/sign-up.dto';
@@ -8,6 +8,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { CheckEmailDto } from './dto/check-email.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { PaginationQueryDto } from './dto/pagination.dto';
 
 
 @ApiTags('Authentication')
@@ -93,5 +94,18 @@ async changePassword(
     changePasswordDto.newPassword,
   );
 }
+@Get()
+async getAllUsers(@Query() query: PaginationQueryDto) {
+  return this.authService.findAllUsers(query.page, query.limit);
+}
 
+@Patch(':id/suspend')
+  async suspendUser(@Param('id') id: string) {
+    return this.authService.suspendUser(id);
+  }
+
+  @Delete(':id')
+  async deleteUser(@Param('id') id: string) {
+    return this.authService.deleteUser(id);
+  }
 }

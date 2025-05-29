@@ -4,10 +4,12 @@ import { Repository } from "typeorm";
 import { CreateBookingDto } from "./dto/bookings.dto";
 import { Booking } from "./entities/booking.entity";
 import Stripe from 'stripe';
-import { PaymentMethod, PaymentStatus } from "src/common/enum";
+import { CancellationStatus, PaymentMethod, PaymentStatus } from "src/common/enum";
 import { config } from 'dotenv';
 import { User } from "src/auth/entities/user.entity";
 import { SearchBookingDto } from "./dto/search.dto";
+import { CancelBookingRequestDto, HandleCancellationDto } from "./dto/cancellation.dto";
+import { EmailService } from "src/email/email.service";
 
 
 config();
@@ -20,7 +22,8 @@ export class BookingService {
     @InjectRepository(Booking)
     private bookingRepository: Repository<Booking>,
     @InjectRepository(User)
-     private userRepository: Repository<User>
+     private userRepository: Repository<User>,
+     private readonly emailService:EmailService
   ) {}
 
 
@@ -96,164 +99,92 @@ async create(createBookingDto: CreateBookingDto): Promise<{ booking: Booking; cl
     }
   }
 
-  async cancelBooking(){
+ async handleCancellation(bookingId: string, dto: HandleCancellationDto) {
+  const booking = await this.bookingRepository.findOne({
+    where: { bookingId },
+    relations: ['customer'],
+  });
 
+  if (!booking || booking.cancellationStatus !== CancellationStatus.REQUESTED) {
+    throw new BadRequestException('No cancellation request pending');
   }
 
-//   async update(id: string, updateBookingDto: UpdateBookingDto): Promise<Booking> {
-//     const booking = await this.findOne(id);
+  if (dto.action === 'REJECT') {
+    booking.cancellationStatus = CancellationStatus.REJECTED;
+    await this.bookingRepository.save(booking);
 
-//     // If vehicle is being updated, validate it
-//     if (updateBookingDto.vehicleId && updateBookingDto.vehicleId !== booking.vehicleId) {
-//       const vehicle = await this.vehicleRepository.findOne({
-//         where: { id: updateBookingDto.vehicleId },
-//       });
-//       if (!vehicle) {
-//         throw new NotFoundException('Vehicle not found');
-//       }
-//       if (!vehicle.isAvailable) {
-//         throw new BadRequestException('Vehicle is not available');
-//       }
-//     }
+    // Send rejection email to user
+    await this.emailService.sendEmail({
+      to: booking.customer.email,
+      subject: 'Booking Cancellation Rejected',
+      text: `Your cancellation request for booking ID ${booking.bookingId} has been rejected.`,
+    });
 
-//     // If locations are being updated, validate them
-//     if (updateBookingDto.departureLocationId && updateBookingDto.departureLocationId !== booking.departureLocationId) {
-//       const location = await this.locationRepository.findOne({
-//         where: { id: updateBookingDto.departureLocationId },
-//       });
-//       if (!location) {
-//         throw new NotFoundException('Departure location not found');
-//       }
-//     }
+    return { message: 'Cancellation rejected' };
+  }
 
-//     if (updateBookingDto.destinationLocationId && updateBookingDto.destinationLocationId !== booking.destinationLocationId) {
-//       const location = await this.locationRepository.findOne({
-//         where: { id: updateBookingDto.destinationLocationId },
-//       });
-//       if (!location) {
-//         throw new NotFoundException('Destination location not found');
-//       }
-//     }
+  // Approve logic
+  booking.cancellationStatus = CancellationStatus.APPROVED;
 
-//     // Recalculate price if necessary details are updated
-//     const priceRecalculationNeeded = 
-//       updateBookingDto.departureLocationId ||
-//       updateBookingDto.destinationLocationId ||
-//       updateBookingDto.vehicleId ||
-//       updateBookingDto.passengers ||
-//       updateBookingDto.bags ||
-//       updateBookingDto.driverLanguage !== undefined ||
-//       updateBookingDto.welcomeSign !== undefined;
+  const tripDateTime = new Date(booking.tripDateTime);
+  const now = new Date();
+  const hoursBeforeTrip = (tripDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
 
-//     let updatedBooking = { ...booking, ...updateBookingDto };
+  let refundAmount = 0;
+  if (hoursBeforeTrip >= 48) {
+    refundAmount = booking.totalPrice;
+  } else if (dto.refundAmount != null) {
+    refundAmount = dto.refundAmount;
+  }
 
-//     if (priceRecalculationNeeded) {
-//       const priceCalculation = await this.calculatePrice({
-//         departureLocationId: updatedBooking.departureLocationId,
-//         destinationLocationId: updatedBooking.destinationLocationId,
-//         vehicleId: updatedBooking.vehicleId,
-//         passengers: updatedBooking.passengers,
-//         bags: updatedBooking.bags,
-//         driverLanguage: updatedBooking.driverLanguage,
-//         welcomeSign: updatedBooking.welcomeSign,
-//       });
+  booking.refundedAmount = refundAmount;
 
-//       updatedBooking = {
-//         ...updatedBooking,
-//         totalPrice: priceCalculation.totalPrice,
-//         languageFee: priceCalculation.languageFee,
-//         welcomeSignFee: priceCalculation.welcomeSignFee,
-//       };
-//     }
+  if (booking.paymentStatus === PaymentStatus.COMPLETED && refundAmount > 0) {
+    // const paymentIntentId = await this.getPaymentIntentIdForBooking(booking.bookingId);
+    // await stripe.refunds.create({
+    //   payment_intent: paymentIntentId,
+    //   amount: Math.round(refundAmount * 100),
+    // });
+  }
 
-//     if (updateBookingDto.tripDateTime) {
-//       updatedBooking.tripDateTime = new Date(updateBookingDto.tripDateTime);
-//     }
+  await this.bookingRepository.save(booking);
 
-//     await this.bookingRepository.update(id, updatedBooking);
-//     return this.findOne(id);
-//   }
+  // Send approval email to user
+  await this.emailService.sendEmail({
+    to: booking.customer.email,
+    subject: 'Booking Cancellation Approved',
+    text: `Your cancellation for booking ID ${booking.bookingId} has been approved.\nRefund Amount: €${refundAmount}`,
+  });
+
+  return {
+    message: 'Cancellation approved',
+    refundAmount,
+  };
+}
+
 
 
 
 
 async findAll(searchDto: SearchBookingDto) {
-    const { page = 1, limit = 10, ...filters } = searchDto;
-    const skip = (page - 1) * limit;
+    const { page = 1, limit = 10, } = searchDto;
+  const [data, total] = await this.bookingRepository.findAndCount({
+    order: { createdAt: 'DESC' },
+    take: limit,
+    skip: (page - 1) * limit,
+  });
+  return {
+    data,
+    total,
+    page,
+    limit,
+  };
 
-    const queryBuilder = this.bookingRepository
-      .createQueryBuilder('booking')
-      .skip(skip)
-      .take(limit)
-      .orderBy('booking.createdAt', 'DESC');
 
-    // Apply filters
-    if (filters.customerName) {
-      queryBuilder.andWhere('booking.customerName ILIKE :customerName', {
-        customerName: `%${filters.customerName}%`,
-      });
-    }
 
-    if (filters.customerEmail) {
-      queryBuilder.andWhere('booking.customerEmail ILIKE :customerEmail', {
-        customerEmail: `%${filters.customerEmail}%`,
-      });
-    }
+  
 
-    if (filters.status) {
-      queryBuilder.andWhere('booking.status = :status', { status: filters.status });
-    }
 
-    if (filters.paymentStatus) {
-      queryBuilder.andWhere('booking.paymentStatus = :paymentStatus', {
-        paymentStatus: filters.paymentStatus,
-      });
-    }
-
-    if (filters.dateFrom && filters.dateTo) {
-      queryBuilder.andWhere('booking.tripDateTime BETWEEN :dateFrom AND :dateTo', {
-        dateFrom: filters.dateFrom,
-        dateTo: filters.dateTo,
-      });
-    } else if (filters.dateFrom) {
-      queryBuilder.andWhere('booking.tripDateTime >= :dateFrom', {
-        dateFrom: filters.dateFrom,
-      });
-    } else if (filters.dateTo) {
-      queryBuilder.andWhere('booking.tripDateTime <= :dateTo', {
-        dateTo: filters.dateTo,
-      });
-    }
-
-    if (filters.departureLocationId) {
-      queryBuilder.andWhere('booking.departureLocationId = :departureLocationId', {
-        departureLocationId: filters.departureLocationId,
-      });
-    }
-
-    if (filters.destinationLocationId) {
-      queryBuilder.andWhere('booking.destinationLocationId = :destinationLocationId', {
-        destinationLocationId: filters.destinationLocationId,
-      });
-    }
-
-    if (filters.vehicleId) {
-      queryBuilder.andWhere('booking.vehicleId = :vehicleId', {
-        vehicleId: filters.vehicleId,
-      });
-    }
-
-    const [bookings, total] = await queryBuilder.getManyAndCount();
-
-    return {
-      data: bookings,
-      meta: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
   }
 
   async remove(id: string): Promise<void> {
@@ -261,5 +192,24 @@ async findAll(searchDto: SearchBookingDto) {
     await this.bookingRepository.remove(booking);
   }
 
- 
+ async requestCancellation(bookingId: string, userId: string, dto: CancelBookingRequestDto) {
+  const booking = await this.bookingRepository.findOne({ where: { bookingId }, relations: ['customer'] });
+
+  if (!booking || booking.customer.id !== userId) {
+    throw new NotFoundException('Booking not found or not owned by user');
+  }
+
+  if (booking.cancellationStatus !== CancellationStatus.NONE) {
+    throw new BadRequestException('Cancellation already requested or processed');
+  }
+
+  booking.cancellationStatus = CancellationStatus.REQUESTED;
+  booking.cancellationReason = dto.reason;
+  booking.cancellationRequestedAt = new Date();
+
+  await this.bookingRepository.save(booking);
+
+  return { message: 'Cancellation request submitted' };
+}
+
 }

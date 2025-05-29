@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards,Request } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiResponse } from "@nestjs/swagger";
 import { CreateBookingDto } from "./dto/bookings.dto";
 import { Booking } from "./entities/booking.entity";
 import { BookingService } from "./trip.service";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { SearchBookingDto } from "./dto/search.dto";
+import { CancelBookingRequestDto } from "./dto/cancellation.dto";
 
 @Controller('bookings')
 export class TripBookingController {
@@ -129,6 +130,17 @@ async findAllBooking(@Query()dto:SearchBookingDto){
     },
   })
 async completePayment(@Param('bookingId')bookingId:string){
-    return this.bookingService.completePayment(bookingId)
+ return this.bookingService.completePayment(bookingId)
 }
+
+@Post('bookings/:bookingId/cancel-request')
+@UseGuards(JwtAuthGuard)
+async requestCancel(
+  @Param('id') bookingId: string,
+  @Request() req,
+  @Body() dto: CancelBookingRequestDto,
+) {
+  return this.bookingService.requestCancellation(bookingId, req.user.id, dto);
+}
+
 }

@@ -59,7 +59,7 @@ export class AuthService {
     // Generate JWT token
     const payload = { sub: user.id, email: user.email };
     const accessToken = this.jwtService.sign(payload);
-
+      this.emailService.sendEmail({to:'', text:'',subject:''})
     return {
       message: 'Compte créé avec succès',
       user: {
@@ -225,5 +225,42 @@ export class AuthService {
     message: 'Mot de passe mis à jour avec succès',
   };
 }
+
+async findAllUsers(page = 1, limit = 10): Promise<{
+  data: User[];
+  total: number;
+  page: number;
+  limit: number;
+}> {
+  const [data, total] = await this.userRepository.findAndCount({
+ 
+    order: { createdAt: 'DESC' },
+    take: limit,
+    skip: (page - 1) * limit,
+    select: ['id', 'firstName', 'lastName', 'email', 'phone', 'birthYear', 'isActive'],
+  });
+
+  return {
+    data,
+    total,
+    page,
+    limit,
+  };
+}
+
+async suspendUser(id: string): Promise<{ message: string }> {
+    const user = await this.userRepository.findOne({where:{ id}});
+    user.isActive = false;
+    await this.userRepository.save(user);
+    return { message: 'Utilisateur suspendu avec succès' };
+  }
+
+  async deleteUser(id: string): Promise<{ message: string }> {
+    const user = await this.userRepository.findOne({where:{ id}});
+    user.isDeleted = true;
+    await this.userRepository.save(user);
+    return { message: 'Utilisateur supprimé avec succès' };
+  }
+
 
 }

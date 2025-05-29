@@ -36,3 +36,10 @@ export enum VehicleTypes {
   VAN = 'van',
 
 }
+
+export enum CancellationStatus {
+  NONE = 'NONE',
+  REQUESTED = 'REQUESTED',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+}

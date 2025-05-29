@@ -1,5 +1,5 @@
 import { User } from 'src/auth/entities/user.entity';
-import { BookingStatus, Languages, PaymentMethod, PaymentStatus } from 'src/common/enum';
+import { BookingStatus, CancellationStatus, Languages, PaymentMethod, PaymentStatus } from 'src/common/enum';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -23,22 +23,27 @@ export class Booking {
   @Column()
   destinationLocation: string;
 
-    @Column()
+    @Column({default:0})
   departureLat: number;
 
-  @Column()
+  @Column({default:0})
   destinationLat: number;
 
-     @Column()
+     @Column({default:0})
   departureLng: number;
 
-  @Column()
+  @Column({default:0})
   destinationLng: number;
 
-     @Column()
+     @Column({default:0})
   distance: number;
 
-  @Column()
+  @Column({default:0})
+  refundedAmount:number
+  @Column({default:CancellationStatus.NONE})
+  cancellationStatus:string
+
+  @Column({default:0})
   time: number;
 
   @Column({ type: 'timestamptz' })
@@ -127,4 +132,10 @@ export class Booking {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Column()
+  cancellationRequestedAt: Date
+
+  @Column({})
+  cancellationReason:string
 }
