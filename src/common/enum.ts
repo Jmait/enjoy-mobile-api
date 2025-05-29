@@ -32,7 +32,7 @@ export enum Languages {
 }
 
 export enum VehicleTypes {
-  BERLINE = 'berline',
+  SEDAN = 'sedan',
   VAN = 'van',
 
 }
