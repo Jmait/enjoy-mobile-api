@@ -103,17 +103,17 @@ async changePassword(
     changePasswordDto.newPassword,
   );
 }
-@Get('/users/all')
+@Get('admin/users/all')
 async getAllUsers(@Query() query: PaginationQueryDto) {
   return this.authService.findAllUsers(query.page, query.limit);
 }
 
-@Patch(':id/suspend')
+@Patch('admin/:id/suspend')
   async suspendUser(@Param('id') id: string) {
     return this.authService.suspendUser(id);
   }
 
-  @Delete(':id')
+  @Delete('admin/:id')
   async deleteUser(@Param('id') id: string) {
     return this.authService.deleteUser(id);
   }

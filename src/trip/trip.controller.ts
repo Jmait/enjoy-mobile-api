@@ -149,7 +149,7 @@ async requestCancel(
   return this.bookingService.requestCancellation(bookingId, req.user.id, dto);
 }
 
-@Post('/adming/:bookingId/handle-cancellation')
+@Post('/admin/:bookingId/handle-cancellation')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard) 
 async handleCancel(
