@@ -81,24 +81,26 @@ export class AuthController {
       user: req.user,
     };
   }
-@Put(':userId/me')
+@Put('/me')
+@ApiOperation({ summary: 'Update profile' })
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 async updateMe(
-  @Param('userId') userId:string,
+  @Request() req,
   @Body() updateUserDto: UpdateUserDto
 ) {
-  return this.authService.updateUser(userId, updateUserDto);
+  return this.authService.updateUser(req.user.id, updateUserDto);
 }
-  @Patch('change-password/:userId')
+  @Patch('change-password')
+  @ApiOperation({ summary: 'Change password' })
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 async changePassword(
-   @Param('userId')userId:string,
+   @Request()req,
   @Body() changePasswordDto: ChangePasswordDto,
 ) {
   return this.authService.changePassword(
-    userId,
+    req.user.id,
     changePasswordDto.currentPassword,
     changePasswordDto.newPassword,
   );
@@ -109,11 +111,13 @@ async getAllUsers(@Query() query: PaginationQueryDto) {
 }
 
 @Patch('admin/:id/suspend')
+@ApiOperation({ summary: 'For admin to suspend user' })
   async suspendUser(@Param('id') id: string) {
     return this.authService.suspendUser(id);
   }
 
   @Delete('admin/:id')
+  @ApiOperation({ summary: 'For admin to delete user' })
   async deleteUser(@Param('id') id: string) {
     return this.authService.deleteUser(id);
   }
