@@ -34,6 +34,8 @@ async create(createBookingDto: CreateBookingDto,): Promise<{ booking: Booking; c
       totalPrice,
       languageFee,
       welcomeSignFee,
+      departAddress,
+      destinationAddress,
       paymentMethod,
       customerId
     } = createBookingDto;
@@ -163,7 +165,9 @@ async create(createBookingDto: CreateBookingDto,): Promise<{ booking: Booking; c
 }
 
 async usertripHistory(searchDto: SearchBookingDto, customerId:string) {
-    const { page = 1, limit = 10, } = searchDto;
+  console.log(customerId)
+    try {
+          const { page = 1, limit = 10, } = searchDto;
   const [data, total] = await this.bookingRepository.findAndCount({
     where:{customerId},
     order: { createdAt: 'DESC' },
@@ -176,7 +180,10 @@ async usertripHistory(searchDto: SearchBookingDto, customerId:string) {
     page,
     limit,
   };
-
+    } catch (error) {
+     throw new InternalServerErrorException(error.message)  
+    }
+   
   }
 
 

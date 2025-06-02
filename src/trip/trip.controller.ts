@@ -53,7 +53,7 @@ export class TripBookingController {
     return await this.bookingService.create(createBookingDto);
   }
 
-   @Get('/:bookingId')
+   @Get('/:bookingId/details')
    @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
      @ApiOperation({ summary: 'Call endpoint to get a booking details' })
@@ -96,12 +96,23 @@ async findAllBooking(@Query()dto:SearchBookingDto){
     return await this.bookingService.findAll(dto)
 }
 
+// @ApiBearerAuth()
+// @UseGuards(JwtAuthGuard)
+// @Get('/history')
+// async findTripHistory(   @Request()req,@Query()dto:SearchBookingDto,){
+//   console.log(req.user)
+//     return await this.bookingService.usertripHistory(dto,     req.user.id,)
+// }
+@Get('/history')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@Get('/history')
-async findTripHistory(@Query()dto:SearchBookingDto,  @Request()req,){
-    return await this.bookingService.usertripHistory(dto,     req.user.id,)
+async findTripHistory(
+  @Request() req,
+  @Query() dto: SearchBookingDto,
+) {
+  return this.bookingService.usertripHistory(dto, req.user.id);
 }
+
 
   @Patch('/:bookingId')
    @ApiBearerAuth()
