@@ -133,9 +133,9 @@ export class Booking {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column()
+  @Column({nullable:true})
   cancellationRequestedAt: Date
 
-  @Column({})
+  @Column({nullable:true})
   cancellationReason:string
 }
