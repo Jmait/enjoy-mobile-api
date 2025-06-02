@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { IsBoolean, IsDateString, IsDecimal, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, Max, Min } from 'class-validator';
 import {  Languages, PaymentMethod, VehicleTypes } from 'src/common/enum';
 
@@ -11,18 +12,23 @@ export class CreateBookingDto {
   departureLocation: string;
 
   @ApiProperty()
+  @Type(() => Number) 
   @IsNumber()
   departureLat:number
 
   @ApiProperty()
+  @Type(() => Number) 
   @IsNumber()
    departureLng:number
 
    @ApiProperty()
+   @Type(() => Number) 
   @IsNumber()
+  
   destinationLat:number
 
    @ApiProperty()
+   @Type(() => Number) 
   @IsNumber()
   destinationLng:number
 
