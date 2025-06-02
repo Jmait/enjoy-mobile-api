@@ -59,7 +59,7 @@ export class AuthService {
 
     // Generate JWT token
     const payload = { sub: user.id, email: user.email };
-    const accessToken = this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload, );
       this.emailService.sendEmail({to:'', text:'',subject:''})
     return {
       message: 'Compte créé avec succès',
@@ -96,7 +96,9 @@ export class AuthService {
 
     // Generate JWT token
     const payload = { sub: user.id, email: user.email };
-    const accessToken = this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload, {
+  expiresIn: '7d', // expires in 7 days
+});
 
     return {
       message: 'Connexion réussie',
