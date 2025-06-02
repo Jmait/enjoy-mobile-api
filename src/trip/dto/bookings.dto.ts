@@ -11,19 +11,19 @@ export class CreateBookingDto {
   departureLocation: string;
 
   @ApiProperty()
-  @IsDecimal()
+  @IsNumber()
   departureLat:number
 
   @ApiProperty()
-  @IsDecimal()
+  @IsNumber()
    departureLng:number
 
    @ApiProperty()
-  @IsDecimal()
+  @IsNumber()
   destinationLat:number
 
    @ApiProperty()
-  @IsDecimal()
+  @IsNumber()
   destinationLng:number
 
   @ApiProperty()
