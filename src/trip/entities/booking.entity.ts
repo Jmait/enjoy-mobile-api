@@ -23,19 +23,19 @@ export class Booking {
   @Column()
   destinationLocation: string;
 
-    @Column({default:0})
+    @Column({default:0, type:'float'})
   departureLat: number;
 
-  @Column({default:0})
+  @Column({default:0, type:'float'})
   destinationLat: number;
 
-     @Column({default:0})
+     @Column({default:0, type:'float'})
   departureLng: number;
 
-  @Column({default:0})
+  @Column({default:0, type:'float'})
   destinationLng: number;
 
-     @Column({default:0})
+     @Column({default:0, type:'float'})
   distance: number;
 
   @Column({default:0})
