@@ -22,6 +22,10 @@ export class Booking {
 
   @Column()
   destinationLocation: string;
+   @Column({nullable:true})
+  departAddress:string
+   @Column({nullable:true})
+  destinationAddress:string
 
     @Column({default:0, type:'float'})
   departureLat: number;
