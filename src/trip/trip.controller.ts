@@ -49,8 +49,8 @@ export class TripBookingController {
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 404, description: 'Location or vehicle not found' })
-  async create(@Body() createBookingDto: CreateBookingDto, @Request()req,) {
-    return await this.bookingService.create(createBookingDto,     req.user.id,);
+  async create(@Body() createBookingDto: CreateBookingDto) {
+    return await this.bookingService.create(createBookingDto);
   }
 
    @Get('/:bookingId')
@@ -96,9 +96,9 @@ async findAllBooking(@Query()dto:SearchBookingDto){
     return await this.bookingService.findAll(dto)
 }
 
-@Get('/:customerId/history')
-async findTripHistory(@Query()dto:SearchBookingDto, @Param('customerId')customerId:string){
-    return await this.bookingService.usertripHistory(dto, customerId)
+@Get('/history')
+async findTripHistory(@Query()dto:SearchBookingDto,  @Request()req,){
+    return await this.bookingService.usertripHistory(dto,     req.user.id,)
 }
 
   @Patch('/:bookingId')

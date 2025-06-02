@@ -53,6 +53,12 @@ export class CreateBookingDto {
   @IsNotEmpty()
   destinationLocation: string;
 
+  
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  customerId: string;
+
   @ApiProperty()
   @IsDateString()
   tripDateTime: Date;
