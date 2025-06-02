@@ -15,6 +15,14 @@ export class CreateBookingDto {
   @Type(() => Number) 
   @IsNumber()
   departureLat:number
+  
+  @IsString()
+  @IsNotEmpty()
+  departAddress:string
+
+  @IsString()
+  @IsNotEmpty()
+  destinationAddress:string
 
   @ApiProperty()
   @Type(() => Number) 
@@ -117,10 +125,6 @@ export class CreateBookingDto {
   @IsEnum(PaymentMethod)
   @IsOptional()
   paymentMethod?: PaymentMethod;
-
-  @ApiProperty()
-  @IsUUID()
-  customerId: string;
  
 
   @ApiProperty()

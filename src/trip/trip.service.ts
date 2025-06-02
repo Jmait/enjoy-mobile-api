@@ -28,14 +28,13 @@ export class BookingService {
 
 
 
-async create(createBookingDto: CreateBookingDto): Promise<{ booking: Booking; clientSecret?: string }> {
+async create(createBookingDto: CreateBookingDto, customerId:string): Promise<{ booking: Booking; clientSecret?: string }> {
   try {
     const {
       totalPrice,
       languageFee,
       welcomeSignFee,
       paymentMethod,
-      customerId,
     } = createBookingDto;
     const user = await this.userRepository.findOne({where:{id:customerId}});
     if (!user) {
@@ -43,6 +42,7 @@ async create(createBookingDto: CreateBookingDto): Promise<{ booking: Booking; cl
     }
     const booking = this.bookingRepository.create({
       ...createBookingDto,
+      customerId,
       tripDateTime: new Date(createBookingDto.tripDateTime),
       totalPrice,
       languageFee,

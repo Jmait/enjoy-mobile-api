@@ -49,8 +49,8 @@ export class TripBookingController {
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 404, description: 'Location or vehicle not found' })
-  async create(@Body() createBookingDto: CreateBookingDto) {
-    return await this.bookingService.create(createBookingDto);
+  async create(@Body() createBookingDto: CreateBookingDto, @Request()req,) {
+    return await this.bookingService.create(createBookingDto,     req.user.id,);
   }
 
    @Get('/:bookingId')
