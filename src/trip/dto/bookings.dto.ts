@@ -15,11 +15,11 @@ export class CreateBookingDto {
   @Type(() => Number) 
   @IsNumber()
   departureLat:number
-  
+    @ApiProperty()
   @IsString()
   @IsNotEmpty()
   departAddress:string
-
+    @ApiProperty()
   @IsString()
   @IsNotEmpty()
   destinationAddress:string
