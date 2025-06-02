@@ -96,6 +96,8 @@ async findAllBooking(@Query()dto:SearchBookingDto){
     return await this.bookingService.findAll(dto)
 }
 
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Get('/history')
 async findTripHistory(@Query()dto:SearchBookingDto,  @Request()req,){
     return await this.bookingService.usertripHistory(dto,     req.user.id,)
