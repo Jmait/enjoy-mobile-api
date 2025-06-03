@@ -4,7 +4,7 @@ import { Repository } from "typeorm";
 import { CreateBookingDto } from "./dto/bookings.dto";
 import { Booking } from "./entities/booking.entity";
 import Stripe from 'stripe';
-import { CancellationStatus, PaymentMethod, PaymentStatus } from "src/common/enum";
+import { BookingStatus, CancellationStatus, PaymentMethod, PaymentStatus } from "src/common/enum";
 import { config } from 'dotenv';
 import { User } from "src/auth/entities/user.entity";
 import { SearchBookingDto } from "./dto/search.dto";
@@ -218,19 +218,28 @@ async findAll(searchDto: SearchBookingDto) {
  async requestCancellation(bookingId: string, userId: string, dto: CancelBookingRequestDto) {
   const booking = await this.bookingRepository.findOne({ where: { bookingId }, });
 
-  // if (!booking || booking.customer.id !== userId) {
-  //   throw new NotFoundException('Booking not found or not owned by user');
-  // }
+  if (!booking) {
+    throw new NotFoundException('Booking not found or not owned by user');
+  }
 
   if (booking.cancellationStatus !== CancellationStatus.NONE) {
     throw new BadRequestException('Cancellation already requested or processed');
   }
 
-  booking.cancellationStatus = CancellationStatus.REQUESTED;
-  booking.cancellationReason = dto.reason;
-  booking.cancellationRequestedAt = new Date();
+const now = new Date();
+const createdAt = booking.createdAt;
+const diffInMs = now.getTime() - createdAt.getTime();
+const isMoreThan48Hours = diffInMs > (48 * 60 * 60 * 1000); // 48 hours in milliseconds
 
-  await this.bookingRepository.save(booking);
+  await this.bookingRepository.update(
+  { bookingId },
+  {
+    cancellationStatus:isMoreThan48Hours? CancellationStatus.REQUESTED: CancellationStatus.APPROVED,
+    status: BookingStatus.CANCELLED,
+    cancellationReason: dto.reason,
+    cancellationRequestedAt: new Date(),
+  },
+);
 
   return { message: 'Cancellation request submitted' };
 }
