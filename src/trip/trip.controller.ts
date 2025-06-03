@@ -91,7 +91,7 @@ export class TripBookingController {
 
    }
 
-@Get('/all')
+@Get('admin/all')
 async findAllBooking(@Query()dto:SearchBookingDto){
     return await this.bookingService.findAll(dto)
 }
@@ -155,7 +155,7 @@ async completePayment(@Param('bookingId')bookingId:string){
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 async requestCancel(
-  @Param('id') bookingId: string,
+  @Param('bookingId') bookingId: string,
   @Request() req,
   @Body() dto: CancelBookingRequestDto,
 ) {

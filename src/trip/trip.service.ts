@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, OnModuleInit } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { CreateBookingDto } from "./dto/bookings.dto";
@@ -25,6 +25,9 @@ export class BookingService {
      private userRepository: Repository<User>,
      private readonly emailService:EmailService
   ) {}
+  // onModuleInit() {
+  //   this.bookingRepository.deleteAll()
+  // }
 
 
 

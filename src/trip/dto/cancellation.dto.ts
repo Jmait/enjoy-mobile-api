@@ -1,4 +1,5 @@
-import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class HandleCancellationDto {
   @IsEnum(['APPROVE', 'REJECT'])
@@ -11,6 +12,8 @@ export class HandleCancellationDto {
 
 
 export class CancelBookingRequestDto {
+  @ApiProperty()
+  @IsNotEmpty()
   @IsString()
   reason: string;
 }
