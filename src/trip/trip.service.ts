@@ -241,7 +241,7 @@ const requiresAdminApproval= diffInHours > 48;
       cancellationStatus: requiresAdminApproval ? CancellationStatus.APPROVED : CancellationStatus.REQUESTED,
       status:requiresAdminApproval? BookingStatus.PENDING: BookingStatus.CANCELLED,
       cancellationReason: dto.reason,
-      refundedAmount:requiresAdminApproval? Number(booking.totalPrice),
+      refundedAmount:requiresAdminApproval? Number(booking.totalPrice):0,
       cancellationRequestedAt: now,
     },
   );
