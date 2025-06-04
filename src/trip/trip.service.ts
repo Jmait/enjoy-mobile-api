@@ -240,7 +240,7 @@ async requestCancellation(bookingId: string, userId: string, dto: CancelBookingR
       cancellationStatus: isMoreThan48Hours ? CancellationStatus.APPROVED : CancellationStatus.REQUESTED,
       status: BookingStatus.CANCELLED,
       cancellationReason: dto.reason,
-      refundedAmount:isMoreThan48Hours? booking.totalPrice:0,
+      refundedAmount:isMoreThan48Hours? Number(booking.totalPrice):0,
       cancellationRequestedAt: now,
     },
   );
