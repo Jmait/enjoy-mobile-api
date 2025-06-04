@@ -230,18 +230,18 @@ async requestCancellation(bookingId: string, userId: string, dto: CancelBookingR
   }
 
 const now = new Date();
-const tripDateTime = booking.tripDateTime;
+const tripDateTime = new Date(booking.tripDateTime);
 const diffInMs = tripDateTime.getTime() - now.getTime(); 
 const diffInHours = diffInMs / (1000 * 60 * 60);
 
-const requiresAdminApproval = diffInHours <= 24 || diffInHours <= 48;
+const requiresAdminApproval= diffInHours > 48;
   await this.bookingRepository.update(
     { bookingId },
     {
-      cancellationStatus: requiresAdminApproval ? CancellationStatus.REQUESTED : CancellationStatus.APPROVED,
+      cancellationStatus: requiresAdminApproval ? CancellationStatus.APPROVED : CancellationStatus.REQUESTED,
       status:requiresAdminApproval? BookingStatus.PENDING: BookingStatus.CANCELLED,
       cancellationReason: dto.reason,
-      refundedAmount:requiresAdminApproval? 0:Number(booking.totalPrice),
+      refundedAmount:requiresAdminApproval? Number(booking.totalPrice):0,
       cancellationRequestedAt: now,
     },
   );

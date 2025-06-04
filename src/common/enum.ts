@@ -39,7 +39,7 @@ export enum VehicleTypes {
 
 export enum CancellationStatus {
   NONE = 'NONE',
-  REQUESTED = 'REQUESTED',
+  REQUESTED = 'PENDING',
   APPROVED = 'APPROVED',
   REJECTED = 'REJECTED',
 }
