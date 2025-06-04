@@ -105,6 +105,13 @@ async changePassword(
     changePasswordDto.newPassword,
   );
 }
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
+ @Delete('/delete-account')
+  @ApiOperation({ summary: 'For user to delete their account' })
+  async deleteAccount(@Request()req) {
+    return this.authService.deleteUser(req.user.id);
+  }
 @Get('admin/users/all')
 async getAllUsers(@Query() query: PaginationQueryDto) {
   return this.authService.findAllUsers(query.page, query.limit);
