@@ -229,24 +229,25 @@ async requestCancellation(bookingId: string, userId: string, dto: CancelBookingR
     throw new BadRequestException('Cancellation already requested or processed');
   }
 
-  const now = new Date();
-  const tripDateTime = booking.tripDateTime;
-  const diffInMs = tripDateTime.getTime() - now.getTime(); 
-  const isMoreThan48Hours = diffInMs > (48 * 60 * 60 * 1000); 
+const now = new Date();
+const tripDateTime = booking.tripDateTime;
+const diffInMs = tripDateTime.getTime() - now.getTime(); 
+const diffInHours = diffInMs / (1000 * 60 * 60);
 
+const requiresAdminApproval = diffInHours <= 24 || diffInHours <= 48;
   await this.bookingRepository.update(
     { bookingId },
     {
-      cancellationStatus: isMoreThan48Hours ? CancellationStatus.APPROVED : CancellationStatus.REQUESTED,
-      status: BookingStatus.CANCELLED,
+      cancellationStatus: requiresAdminApproval ? CancellationStatus.REQUESTED : CancellationStatus.APPROVED,
+      status:requiresAdminApproval? BookingStatus.PENDING: BookingStatus.CANCELLED,
       cancellationReason: dto.reason,
-      refundedAmount:isMoreThan48Hours? Number(booking.totalPrice):0,
+      refundedAmount:requiresAdminApproval? 0:Number(booking.totalPrice),
       cancellationRequestedAt: now,
     },
   );
 
   return {
-    message: isMoreThan48Hours
+    message: requiresAdminApproval
       ? 'Cancellation request submitted for manual review (100% refund expected)'
       : 'Cancellation approved (partial or no refund)',
   };
