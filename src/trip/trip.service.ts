@@ -107,7 +107,6 @@ async create(createBookingDto: CreateBookingDto,): Promise<{ booking: Booking; c
  async handleCancellation(bookingId: string, dto: HandleCancellationDto) {
   const booking = await this.bookingRepository.findOne({
     where: { bookingId },
-    relations: ['customer'],
   });
 
   if (!booking || booking.cancellationStatus !== CancellationStatus.REQUESTED) {
