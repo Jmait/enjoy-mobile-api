@@ -64,6 +64,9 @@ export class Booking {
 
   @Column({ default: 0 })
   pets: number;
+  
+  @Column({ default: 0 })
+  strollers:number
 
   @Column({ default: 0 })
   wheelchair: number;

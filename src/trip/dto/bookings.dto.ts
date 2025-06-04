@@ -75,6 +75,11 @@ export class CreateBookingDto {
 
   @ApiProperty()
   @IsNumber()
+  @Min(0)
+  strollers: number;
+
+  @ApiProperty()
+  @IsNumber()
   @IsOptional()
   childSeat: number;
 

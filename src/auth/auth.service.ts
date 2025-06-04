@@ -13,12 +13,15 @@ import { User } from './entities/user.entity';
 import { PasswordReset } from './entities/password-reset.entity';
 import { EmailService } from 'src/email/email.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Booking } from 'src/trip/entities/booking.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+     @InjectRepository(Booking)
+     private bookingRepository: Repository<Booking>,
     @InjectRepository(PasswordReset)
     private passwordResetRepository: Repository<PasswordReset>,
     private jwtService: JwtService,
@@ -261,6 +264,7 @@ async suspendUser(id: string): Promise<{ message: string }> {
   async deleteUser(id: string): Promise<{ message: string }> {
     const user = await this.userRepository.findOne({where:{ id}});
     if(user){
+      await this.bookingRepository.delete({customerId:id})
       await this.userRepository.delete({id});
       return { message: 'Utilisateur supprimé avec succès' };
     }else{

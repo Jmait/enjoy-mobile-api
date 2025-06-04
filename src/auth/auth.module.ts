@@ -8,11 +8,12 @@ import { PasswordReset } from './entities/password-reset.entity';
 import { User } from './entities/user.entity';
 import { JwtStrategy } from './guards/jwt.strategy';
 import { EmailModule } from 'src/email/email.module';
+import { Booking } from 'src/trip/entities/booking.entity';
 
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, PasswordReset]),
+    TypeOrmModule.forFeature([User, PasswordReset, Booking]),
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'your-secret-key',
