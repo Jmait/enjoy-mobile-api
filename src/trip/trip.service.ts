@@ -218,8 +218,8 @@ async findAll(searchDto: SearchBookingDto) {
     await this.bookingRepository.remove(booking);
   }
 
- async requestCancellation(bookingId: string, userId: string, dto: CancelBookingRequestDto) {
-  const booking = await this.bookingRepository.findOne({ where: { bookingId }, });
+async requestCancellation(bookingId: string, userId: string, dto: CancelBookingRequestDto) {
+  const booking = await this.bookingRepository.findOne({ where: { bookingId } });
 
   if (!booking) {
     throw new NotFoundException('Booking not found or not owned by user');
@@ -229,22 +229,28 @@ async findAll(searchDto: SearchBookingDto) {
     throw new BadRequestException('Cancellation already requested or processed');
   }
 
-const now = new Date();
-const createdAt = booking.createdAt;
-const diffInMs = now.getTime() - createdAt.getTime();
-const isMoreThan48Hours = diffInMs > (48 * 60 * 60 * 1000); // 48 hours in milliseconds
+  const now = new Date();
+  const tripDateTime = booking.tripDateTime;
+  const diffInMs = tripDateTime.getTime() - now.getTime(); 
+  const isMoreThan48Hours = diffInMs > (48 * 60 * 60 * 1000); 
 
   await this.bookingRepository.update(
-  { bookingId },
-  {
-    cancellationStatus:isMoreThan48Hours? CancellationStatus.REQUESTED: CancellationStatus.APPROVED,
-    status: BookingStatus.CANCELLED,
-    cancellationReason: dto.reason,
-    cancellationRequestedAt: new Date(),
-  },
-);
+    { bookingId },
+    {
+      cancellationStatus: isMoreThan48Hours ? CancellationStatus.APPROVED : CancellationStatus.REQUESTED,
+      status: BookingStatus.CANCELLED,
+      cancellationReason: dto.reason,
+      refundedAmount:isMoreThan48Hours? booking.totalPrice:0,
+      cancellationRequestedAt: now,
+    },
+  );
 
-  return { message: 'Cancellation request submitted' };
+  return {
+    message: isMoreThan48Hours
+      ? 'Cancellation request submitted for manual review (100% refund expected)'
+      : 'Cancellation approved (partial or no refund)',
+  };
 }
+
 
 }
