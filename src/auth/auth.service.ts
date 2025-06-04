@@ -260,9 +260,14 @@ async suspendUser(id: string): Promise<{ message: string }> {
 
   async deleteUser(id: string): Promise<{ message: string }> {
     const user = await this.userRepository.findOne({where:{ id}});
-    user.isDeleted = true;
-    await this.userRepository.save(user);
-    return { message: 'Utilisateur supprimé avec succès' };
+    if(user){
+      await this.userRepository.delete({id});
+      return { message: 'Utilisateur supprimé avec succès' };
+    }else{
+       throw new NotFoundException('Utilisateur non trouvé');
+    }
+   
+ 
   }
 // src/users/user.service.ts
 async updateUser(userId: string, updateUserDto: UpdateUserDto) {
