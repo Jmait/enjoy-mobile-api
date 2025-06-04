@@ -247,9 +247,8 @@ const requiresAdminApproval= diffInHours > 48;
   );
 
   return {
-    message: requiresAdminApproval
-      ? 'Cancellation request submitted for manual review (100% refund expected)'
-      : 'Cancellation approved (partial or no refund)',
+    message: requiresAdminApproval?'Cancellation approved (partial or no refund)'
+      : 'Cancellation request submitted for manual review (100% refund expected)'
   };
 }
 
