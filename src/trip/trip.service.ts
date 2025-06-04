@@ -241,14 +241,15 @@ const requiresAdminApproval= diffInHours > 48;
       cancellationStatus: requiresAdminApproval ? CancellationStatus.APPROVED : CancellationStatus.REQUESTED,
       status:requiresAdminApproval? BookingStatus.PENDING: BookingStatus.CANCELLED,
       cancellationReason: dto.reason,
-      refundedAmount:requiresAdminApproval? Number(booking.totalPrice):0,
+      refundedAmount:requiresAdminApproval? Number(booking.totalPrice),
       cancellationRequestedAt: now,
     },
   );
 
   return {
-    message: requiresAdminApproval?'Cancellation approved (partial or no refund)'
-      : 'Cancellation request submitted for manual review (100% refund expected)'
+    message: requiresAdminApproval
+      ? 'Cancellation request submitted for manual review (partial or no refund)'
+      : 'Cancellation approved',
   };
 }
 
