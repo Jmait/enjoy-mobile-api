@@ -41,7 +41,7 @@ export class AuthService {
   async signUp(signUpDto: SignUpDto) {
     // Check if user already exists
     const existingUser = await this.userRepository.findOne({ 
-      where: { email: signUpDto.email } 
+      where: { email: signUpDto.email.toLowerCase() } 
     });
     
     if (existingUser) {
@@ -80,7 +80,7 @@ export class AuthService {
 
   async signIn(signInDto: SignInDto) {
     const user = await this.userRepository.findOne({ 
-      where: { email: signInDto.email } 
+      where: { email: signInDto.email.toLowerCase() } 
     });
 
     if (!user) {
