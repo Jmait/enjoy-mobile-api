@@ -124,8 +124,9 @@ export class Booking {
   @ManyToOne(()=>User)
   customerId:string
 
-  @JoinColumn({name:'customerId'})
-  customer: User
+  @ManyToOne(() => User, (user) => user.bookings)
+  @JoinColumn({ name: 'customerId' })
+  customer: User;
 
 
   @Column({ nullable: true })

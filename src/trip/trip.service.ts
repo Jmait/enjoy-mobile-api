@@ -107,6 +107,7 @@ async create(createBookingDto: CreateBookingDto,): Promise<{ booking: Booking; c
  async handleCancellation(bookingId: string, dto: HandleCancellationDto) {
   const booking = await this.bookingRepository.findOne({
     where: { bookingId },
+    relations:['customer']
   });
 
   if (!booking || booking.cancellationStatus !== CancellationStatus.REQUESTED) {
@@ -196,6 +197,7 @@ async findAll(searchDto: SearchBookingDto) {
   const [data, total] = await this.bookingRepository.findAndCount({
     order: { createdAt: 'DESC' },
     take: limit,
+    relations:['customer'],
     skip: (page - 1) * limit,
   });
   return {
