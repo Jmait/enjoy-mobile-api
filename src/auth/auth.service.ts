@@ -29,8 +29,10 @@ export class AuthService {
   ) {}
 
   async checkEmail(email: string) {
-    const user = await this.userRepository.findOne({ where: { email } });
-  
+  const user = await this.userRepository
+  .createQueryBuilder('user')
+  .where('LOWER(user.email) = LOWER(:email)', { email: email })
+  .getOne();  
     return {
       exists: !!user,
       message: user ? 'Email already registered' : 'Email available'
@@ -142,12 +144,11 @@ export class AuthService {
     });
 
     await this.passwordResetRepository.save(passwordReset);
-
+     this.emailService.sendEmail({to:user.email, text:`Use ${code} to reset your password`,subject:`Password reset ${code}`})
     // Here you would send the email with the reset link and code
     // For demo purposes, we're just returning the code
     console.log(`Reset code for ${user.email}: ${code}`);
     console.log(`Reset token: ${token}`);
-
     return {
       message: 'Un lien de réinitialisation a été envoyé à votre adresse e-mail',
       // In production, don't return these values
