@@ -79,9 +79,10 @@ export class AuthService {
   }
 
   async signIn(signInDto: SignInDto) {
-    const user = await this.userRepository.findOne({ 
-      where: { email: signInDto.email.toLowerCase() } 
-    });
+   const user = await this.userRepository
+  .createQueryBuilder('user')
+  .where('LOWER(user.email) = LOWER(:email)', { email: signInDto.email })
+  .getOne();
 
     if (!user) {
       throw new UnauthorizedException('Identifiants invalides');
