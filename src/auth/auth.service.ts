@@ -121,9 +121,10 @@ export class AuthService {
   }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
-    const user = await this.userRepository.findOne({ 
-      where: { email: forgotPasswordDto.email } 
-    });
+    const user = await this.userRepository
+  .createQueryBuilder('user')
+  .where('LOWER(user.email) = LOWER(:email)', { email: forgotPasswordDto.email })
+  .getOne();
 
     if (!user) {
       throw new NotFoundException('Aucun compte trouvé avec cette adresse e-mail');
