@@ -6,6 +6,7 @@ import { BookingService } from "./trip.service";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { SearchBookingDto } from "./dto/search.dto";
 import { CancelBookingRequestDto, HandleCancellationDto } from "./dto/cancellation.dto";
+import { SendRideDetailsDto } from "./dto/send-ride-details.dto";
 @ApiTags('Bookings')
 @Controller('bookings')
 export class TripBookingController {
@@ -170,6 +171,15 @@ async handleCancel(
   @Body() dto: HandleCancellationDto,
 ) {
   return this.bookingService.handleCancellation(bookingId, dto);
+}
+
+@Post('/admin/send-email')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard) 
+async sendEmail(
+  @Body() dto: SendRideDetailsDto,
+) {
+  return this.bookingService.sendRideDetails(dto);
 }
 
 }

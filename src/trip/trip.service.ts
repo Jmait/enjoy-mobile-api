@@ -10,6 +10,7 @@ import { User } from "src/auth/entities/user.entity";
 import { SearchBookingDto } from "./dto/search.dto";
 import { CancelBookingRequestDto, HandleCancellationDto } from "./dto/cancellation.dto";
 import { EmailService } from "src/email/email.service";
+import { SendRideDetailsDto } from "./dto/send-ride-details.dto";
 
 
 config();
@@ -254,5 +255,17 @@ const requiresAdminApproval= diffInHours > 48;
   };
 }
 
+
+async sendRideDetails(dto:SendRideDetailsDto){
+  try {
+    await this.emailService.sendEmail({
+      subject:dto.subject??`Ride Confirmation and details`,
+      to:dto.email,
+      text:dto.message
+    })
+  } catch (error) {
+    throw new InternalServerErrorException('An error occured')
+  }
+}
 
 }

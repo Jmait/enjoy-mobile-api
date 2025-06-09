@@ -242,7 +242,7 @@ async findAllUsers(page = 1, limit = 10): Promise<{
   limit: number;
 }> {
   const [data, total] = await this.userRepository.findAndCount({
- 
+    where:{isAdmin:false},
     order: { createdAt: 'DESC' },
     take: limit,
     skip: (page - 1) * limit,
@@ -259,9 +259,9 @@ async findAllUsers(page = 1, limit = 10): Promise<{
 
 async suspendUser(id: string): Promise<{ message: string }> {
     const user = await this.userRepository.findOne({where:{ id}});
-    user.isActive = false;
+    user.isActive = !user.isActive;
     await this.userRepository.save(user);
-    return { message: 'Utilisateur suspendu avec succès' };
+    return { message:!user.isActive==false? 'Utilisateur suspendu avec succès':'Account activated' };
   }
 
   async deleteUser(id: string): Promise<{ message: string }> {
