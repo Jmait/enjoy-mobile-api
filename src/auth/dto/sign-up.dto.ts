@@ -26,7 +26,6 @@ export class SignUpDto {
   @ApiProperty({ example: '0612345678', description: 'Phone number', required: false })
   @IsOptional()
   @IsString()
-  @Matches(/^(\+33|0)[1-9](\d{8})$/, { message: 'Invalid French phone number format' })
   phone?: string;
 
   @ApiProperty({ example: 1990, description: 'Birth year', required: false })
