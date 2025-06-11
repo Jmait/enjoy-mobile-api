@@ -99,7 +99,7 @@ async create(createBookingDto: CreateBookingDto,): Promise<{ booking: Booking; c
         if (!booking) {
             throw new NotFoundException('No booking found with provided id')
         }
-      return await this.bookingRepository.update({bookingId}, {paymentStatus:PaymentStatus.COMPLETED});
+      return await this.bookingRepository.update({bookingId}, {paymentStatus:PaymentStatus.PAID});
     } catch (error) {
        throw new InternalServerErrorException('An error occured');  
     }
