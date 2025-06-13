@@ -62,10 +62,42 @@ export class AuthService {
 
     await this.userRepository.save(user);
 
+    const welcomeEmail  =`<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Bienvenue sur enjöy !</title>
+  </head>
+  <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <h2>Objet : Bienvenue sur enjöy&nbsp;!</h2>
+
+    <p>Bonjour <strong>${user.firstName}</strong>,</p>
+
+    <p>
+      Merci de votre inscription. Vous pouvez désormais planifier vos trajets depuis ou vers les aéroports de Paris, en toute sérénité.
+    </p>
+
+    <p>
+      On s’occupe de tout pour vous offrir un trajet confortable et sans stress.
+    </p>
+
+    <p>À bientôt à bord&nbsp;!</p>
+
+    <p style="margin-top: 30px;">
+      L'équipe <strong>enjöy</strong>
+    </p>
+  </body>
+</html>
+`
+
     // Generate JWT token
     const payload = { sub: user.id, email: user.email };
     const accessToken = this.jwtService.sign(payload, );
-      this.emailService.sendEmail({to:'', text:'',subject:''})
+      this.emailService.sendEmail({
+        to:user.email, 
+        html:welcomeEmail,
+        subject:'Bienvenue sur enjöy !'
+      })
     return {
       message: 'Compte créé avec succès',
       user: {
