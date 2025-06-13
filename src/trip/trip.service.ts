@@ -255,7 +255,7 @@ this.emailService.sendEmail({
         }
         const {totalPrice, tripDateTime, departAddress,time,destinationAddress}= booking;
         const {firstName, } = booking.customer
-  const email =`<!DOCTYPE html>
+  const adminEmail =`<!DOCTYPE html>
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
@@ -284,12 +284,51 @@ this.emailService.sendEmail({
   </body>
 </html>
 `
+
+const emailUser= `
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Paiement échoué – action requise</title>
+  </head>
+  <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <h2>Objet : Paiement échoué – action requise</h2>
+
+    <p>Bonjour <strong>${firstName}</strong>,</p>
+
+    <p>
+      Votre tentative de paiement pour le trajet du <strong>${booking.tripDateTime}</strong> a échoué.<br />
+      Merci de vérifier vos informations bancaires et de réessayer depuis l’application.
+    </p>
+
+    <p>
+      Sans validation du paiement, la réservation ne sera pas confirmée.
+    </p>
+
+    <p>
+      Merci pour votre compréhension.
+    </p>
+
+    <p style="margin-top: 30px;">
+      L'équipe <strong>enjöy</strong>
+    </p>
+  </body>
+</html>
+`;
         
         this.emailService.sendEmail({
           to:process.env.ADMIN_EMAIL,
-          html:email,
+          html:adminEmail,
           subject:`Échec de paiement – ${firstName} – Trajet du ${booking.tripDateTime} à ${booking.time}`
         })
+
+        this.emailService.sendEmail({
+          to:booking.customer.email,
+          html:emailUser,
+          subject:`Paiement échoué – action requise`
+        })
+
       return {message:'Admin has been notified of the payment failure'}
     } catch (error) {
        throw new InternalServerErrorException('An error occured');  
