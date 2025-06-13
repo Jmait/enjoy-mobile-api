@@ -473,6 +473,7 @@ async usertripHistory(searchDto: SearchBookingDto, customerId:string) {
         ELSE 1
       END
     `, 'priority_order')
+    .where('customer.id = :customerId', { customerId })
     .orderBy('priority_order', 'ASC') // future trips first
     .addOrderBy('booking.tripDateTime', 'ASC') // then by trip date/time
     .setParameter('today', today.toISOString()) // PostgreSQL ISO format
