@@ -424,12 +424,22 @@ async usertripHistory(searchDto: SearchBookingDto, customerId:string) {
   console.log(customerId)
     try {
           const { page = 1, limit = 10, } = searchDto;
-  const [data, total] = await this.bookingRepository.findAndCount({
-    where:{customerId},
-    order: { createdAt: 'DESC' },
-    take: limit,
-    skip: (page - 1) * limit,
-  });
+          const today = startOfDay(new Date());
+  const [data, total] = await this.bookingRepository
+    .createQueryBuilder('booking')
+    .leftJoinAndSelect('booking.customer', 'customer')
+    .addSelect(`
+      CASE 
+        WHEN booking.tripDateTime >= :today THEN 0
+        ELSE 1
+      END
+    `, 'priority_order')
+    .orderBy('priority_order', 'ASC') // future trips first
+    .addOrderBy('booking.tripDateTime', 'ASC') // then by trip date/time
+    .setParameter('today', today.toISOString()) // PostgreSQL ISO format
+    .skip((page - 1) * limit)
+    .take(limit)
+    .getManyAndCount();
   return {
     data,
     total,
