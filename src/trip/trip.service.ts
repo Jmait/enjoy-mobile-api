@@ -200,10 +200,46 @@ async create(createBookingDto: CreateBookingDto,): Promise<{ booking: Booking; c
 
   async completePayment(bookingId:string){
     try {
-        const booking = await this.bookingRepository.findOne({where:{ bookingId}});
+        const booking = await this.bookingRepository.findOne({where:{ bookingId}, relations:['customer']});
+
         if (!booking) {
             throw new NotFoundException('No booking found with provided id')
         }
+        const {firstName} =booking.customer
+        const paymentSuccessEmail =`<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Paiement confirmé – votre trajet est prêt</title>
+  </head>
+  <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <h2>Objet : Paiement confirmé – votre trajet est prêt</h2>
+
+    <p>Bonjour <strong>${firstName}</strong>,</p>
+
+    <p>
+      Nous avons bien reçu votre paiement pour le trajet du 
+      <strong>${booking.tripDateTime}</strong> à <strong>${booking.time}</strong>.
+    </p>
+
+    <p>
+      Merci de votre confiance.<br />
+      Vous recevrez bientôt les détails de votre chauffeur.
+    </p>
+
+    <p>À bientôt à bord !</p>
+
+    <p style="margin-top: 30px;">
+      L'équipe <strong>enjöy</strong>
+    </p>
+  </body>
+</html>
+`
+this.emailService.sendEmail({
+  to:booking.customer.email,
+  subject:`Paiement confirmé – votre trajet est prêt`,
+  html: paymentSuccessEmail
+})
       return await this.bookingRepository.update({bookingId}, {paymentStatus:PaymentStatus.PAID});
     } catch (error) {
        throw new InternalServerErrorException('An error occured');  
