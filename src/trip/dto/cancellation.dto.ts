@@ -12,7 +12,7 @@ export class HandleCancellationDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsNumber()
+  @IsString()
   rejectionOrApprovalComments?: string;
 }
 
