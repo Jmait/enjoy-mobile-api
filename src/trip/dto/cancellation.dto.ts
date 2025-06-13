@@ -9,6 +9,11 @@ export class HandleCancellationDto {
   @IsOptional()
   @IsNumber()
   refundAmount?: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNumber()
+  rejectionOrApprovalComments?: string;
 }
 
 

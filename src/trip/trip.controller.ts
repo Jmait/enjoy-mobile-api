@@ -151,6 +151,11 @@ async findTripHistory(
 async completePayment(@Param('bookingId')bookingId:string){
  return this.bookingService.completePayment(bookingId)
 }
+@ApiOperation({ summary: 'Call endpoint once payment failed' })
+@Post(':bookingId/payment-fail')
+async paymentFailure(@Param('bookingId')bookingId:string){
+ return this.bookingService.completePayment(bookingId)
+}
 
 @Post('/:bookingId/cancel-request')
 @ApiBearerAuth()

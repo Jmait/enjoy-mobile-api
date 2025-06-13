@@ -29,6 +29,11 @@ export enum Languages {
   FRENCH = 'fr',
   ENGLISH = 'en',
   SPANISH = 'es',
+  PORTUGUESE='pt',
+  ARABIC='ar',
+  GERMANY='de',
+  ITALIAN='it',
+  CHINESE='zh'
 }
 
 export enum VehicleTypes {
