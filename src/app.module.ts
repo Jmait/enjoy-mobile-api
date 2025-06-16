@@ -6,6 +6,7 @@ import { config } from 'dotenv';
 import { User } from './auth/entities/user.entity';
 import { PasswordReset } from './auth/entities/password-reset.entity';
 import { TripBookingModule } from './trip/trips.module';
+import { VehicleModule } from './vehicles/vehicle.module';
 
 config();
 
@@ -30,6 +31,7 @@ config();
     }),
     AuthModule,
     TripBookingModule,
+    VehicleModule
   ],
 })
 export class AppModule {}
