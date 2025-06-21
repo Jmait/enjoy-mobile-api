@@ -144,6 +144,5 @@ export class CreateBookingDto {
   specialInstructions?: string;
 
   @ApiProperty()
-  @IsEnum(VehicleTypes)
-  vehicleType: VehicleTypes;
+  vehicleType: string;
 }

@@ -4,6 +4,7 @@ import { CreateVehicleDto } from "./dto/create-vehicle.dto";
 import { UpdateVehicleDto } from "./dto/update-vehicle.dto";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
+import { RouteDto } from "./dto/update-route.dto";
 
 
 @ApiTags('Vehicle management')
@@ -13,8 +14,8 @@ export class VehicleController {
      @UseGuards(JwtAuthGuard)
       @ApiBearerAuth()
     @Post()
-    createVehicle(@Body()dto:CreateVehicleDto){
-    return this.vehicleService.createVehicle(dto)
+    createVehicle(){
+    return this.vehicleService.createVehicle()
     }
     
      @UseGuards(JwtAuthGuard)
@@ -29,5 +30,13 @@ export class VehicleController {
 
      manageVehicles(@Body()dto:UpdateVehicleDto, @Param('vehicleId')vehicleId:string){
       return this.vehicleService.manageVehicles(dto, vehicleId)
+    }
+
+        @UseGuards(JwtAuthGuard)
+      @ApiBearerAuth() 
+    @Patch(':routeId/route/edit')
+     manageRoute(@Body()dto:RouteDto, @Param('routeId')vehicleId:string){
+   
+      return this.vehicleService.manageRoute(dto, vehicleId)
     }
 }
