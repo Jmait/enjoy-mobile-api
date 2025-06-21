@@ -14,17 +14,19 @@ export class LegalService {
    
  async createLegalContent(dto: UpdateContentDto,){
       const legal = this.legalRepo.create({
-    content:dto.content
+         content:dto.content,
+         title:dto.title
       }, )
 
       return await this.legalRepo.save(legal)
     }
 
     async updateLegalContent(dto: UpdateContentDto, postId:string){
-      return this.legalRepo.update({
+      return await this.legalRepo.update({
         postId,
       }, {
-        content: dto.content
+        content: dto.content,
+        title: dto.title
       })
     }
 
