@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { LegalQuery, UpdateContentDto } from "./dto/content-dto";
 import { LegalService } from "./legal.service";
-import { AuthGuard } from "@nestjs/passport";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 @ApiTags('Legal pages')
