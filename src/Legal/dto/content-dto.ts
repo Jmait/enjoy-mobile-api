@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 
 export class UpdateContentDto {
@@ -14,4 +14,15 @@ export class UpdateContentDto {
     @IsString()
     @IsNotEmpty()
     content:string
+
+      @ApiProperty()
+    @IsString()
+    @IsNotEmpty()
+    pageTitle:string
+}
+
+export class LegalQuery{
+    @IsString()
+    @IsOptional()
+    pageTitle:string
 }

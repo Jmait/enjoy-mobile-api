@@ -2,7 +2,6 @@ import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { VehicleEntity } from "./entity/vehicle.entity";
 import { Repository } from "typeorm";
-import { CreateVehicleDto } from "./dto/create-vehicle.dto";
 import { UpdateVehicleDto } from "./dto/update-vehicle.dto";
 import { RouteDto } from "./dto/update-route.dto";
 import { FixedRoutes } from "./entity/routes.entity";
@@ -61,7 +60,8 @@ export class VehicleService {
           const updated =   await this.vehicleRepository.update(
              {vehicleId},
             {
-                pricePerKm: dto.price
+                price: dto.price,
+                pricePerKm: dto.pricePerKm
              });
           
             return updated;

@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
-import { UpdateContentDto } from "./dto/content-dto";
+import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
+import { LegalQuery, UpdateContentDto } from "./dto/content-dto";
 import { LegalService } from "./legal.service";
 import { AuthGuard } from "@nestjs/passport";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
@@ -23,7 +23,7 @@ export class LegalController {
     }
 
     @Get()
-    async getContent(){
-        return this.legalService.getContent()
+    async getContent(@Query()dto:LegalQuery){
+        return this.legalService.getContent(dto)
     }
 }

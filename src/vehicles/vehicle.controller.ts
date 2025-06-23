@@ -36,7 +36,6 @@ export class VehicleController {
       @ApiBearerAuth() 
     @Patch(':routeId/route/edit')
      manageRoute(@Body()dto:RouteDto, @Param('routeId')vehicleId:string){
-   
       return this.vehicleService.manageRoute(dto, vehicleId)
     }
 }

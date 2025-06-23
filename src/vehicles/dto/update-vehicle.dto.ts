@@ -1,6 +1,11 @@
-import {  OmitType, PartialType } from "@nestjs/swagger";
-import { CreateVehicleDto } from "./create-vehicle.dto";
+import {  ApiProperty } from "@nestjs/swagger";
+import { IsNumber } from "class-validator";
 
-export class UpdateVehicleDto extends OmitType(CreateVehicleDto,['vehicleType']) {
-  // All fields from CreateVehicleDto are now optional
+export class UpdateVehicleDto{
+    @ApiProperty()
+    @IsNumber()
+    pricePerKm: number
+     @ApiProperty()
+    @IsNumber()
+    price: number
 }

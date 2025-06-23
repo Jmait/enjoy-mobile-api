@@ -10,6 +10,9 @@ export class LegalEntity {
     @Column({nullable:true, default:'Title goes here....'})
     title: string
 
+    @Column({nullable:true, default:'Policy Page'})
+     pageTitle: string
+
     @Column('text', {default:'Lorem ipsum data and ......'})
     content:string
 }

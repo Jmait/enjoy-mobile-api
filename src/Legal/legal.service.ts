@@ -1,7 +1,7 @@
 import { Repository } from "typeorm";
 
 import { InjectRepository } from "@nestjs/typeorm";
-import { UpdateContentDto } from "./dto/content-dto";
+import { LegalQuery, UpdateContentDto } from "./dto/content-dto";
 import { LegalEntity } from "./entities/legal.entity";
 
 
@@ -15,6 +15,7 @@ export class LegalService {
  async createLegalContent(dto: UpdateContentDto,){
       const legal = this.legalRepo.create({
          content:dto.content,
+         pageTitle:dto.pageTitle,
          title:dto.title
       }, )
 
@@ -26,11 +27,20 @@ export class LegalService {
         postId,
       }, {
         content: dto.content,
+        pageTitle:dto.pageTitle,
         title: dto.title
       })
     }
 
-    async getContent(){
-     return await this.legalRepo.find();
+  async getContent(query:LegalQuery){
+     const qb=  this.legalRepo
+     .createQueryBuilder('legal')
+     
+  if (query.pageTitle) {
+    qb.where('LOWER(legal.pageTitle) = LOWER(:pageTitle)', {
+      pageTitle: query.pageTitle,
+    });
+  }
+   return await qb.getMany();
     }
 }
