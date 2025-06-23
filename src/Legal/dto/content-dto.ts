@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 
 export class UpdateContentDto {
@@ -21,8 +21,22 @@ export class UpdateContentDto {
     pageTitle:string
 }
 
-export class LegalQuery{
-    @IsString()
-    @IsOptional()
-    pageTitle:string
+
+
+export enum LegalType {
+  TERMS = 'terms',
+  PRIVACY = 'privacy',
+  COOKIE = 'cookies',
+  LEGAL ='legal-notice',
+}
+
+export class LegalQuery {
+  @ApiProperty({
+    enum: LegalType,
+    required: false,
+    description: 'Type of legal document (e.g., TERMS, PRIVACY, COOKIE)',
+  })
+  @IsEnum(LegalType)
+  @IsOptional()
+  type: LegalType;
 }

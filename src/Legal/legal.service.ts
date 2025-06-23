@@ -36,9 +36,9 @@ export class LegalService {
      const qb=  this.legalRepo
      .createQueryBuilder('legal')
      
-  if (query.pageTitle) {
+  if (query.type) {
     qb.where('LOWER(legal.pageTitle) = LOWER(:pageTitle)', {
-      pageTitle: query.pageTitle,
+      pageTitle: query.type,
     });
   }
    return await qb.getMany();
