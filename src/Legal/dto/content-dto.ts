@@ -3,13 +3,10 @@ import { IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 
 export class UpdateContentDto {
+   
     @ApiProperty()
     @IsString()
-    @IsNotEmpty()
-     @ApiProperty()
-    @IsString()
     @IsOptional()
-    @IsNotEmpty()
     title:string
      @ApiProperty()
     @IsString()
