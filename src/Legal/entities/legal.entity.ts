@@ -7,7 +7,7 @@ export class LegalEntity {
     postId:string
     
 
-    @Column({nullable:true, default:'Title goes here....'})
+    @Column({nullable:true})
     title: string
 
     @Column({nullable:true, default:'Policy Page'})
