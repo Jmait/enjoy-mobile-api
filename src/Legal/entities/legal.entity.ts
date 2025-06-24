@@ -15,4 +15,7 @@ export class LegalEntity {
 
     @Column('text', {default:'Lorem ipsum data and ......'})
     content:string
+
+    @Column('text', {default:'fr'})
+    language:string
 }

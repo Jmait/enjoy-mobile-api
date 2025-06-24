@@ -15,6 +15,7 @@ export class LegalService {
  async createLegalContent(dto: UpdateContentDto,){
       const legal = this.legalRepo.create({
          content:dto.content,
+         language:dto.language,
          pageTitle:dto.pageTitle,
          title:dto.title
       }, )
@@ -36,11 +37,16 @@ export class LegalService {
      const qb=  this.legalRepo
      .createQueryBuilder('legal')
      
-  if (query.type) {
+  if (query.type|| query.langauage) {
     qb.where('LOWER(legal.pageTitle) = LOWER(:pageTitle)', {
       pageTitle: query.type,
+    }).orWhere('LOWER(legal.language) = LOWER(:language)', {
+      language: query.langauage,
     });
+
   }
+
+
    return await qb.getMany();
     }
 }

@@ -19,6 +19,13 @@ export class UpdateContentDto {
     @IsString()
     @IsNotEmpty()
     pageTitle:string
+
+    @ApiProperty()
+    @IsString()
+    @IsNotEmpty()
+    language:string
+
+
 }
 
 
@@ -29,7 +36,10 @@ export enum LegalType {
   COOKIE = 'cookies',
   LEGAL ='legal-notice',
 }
-
+export enum LegalLanguage {
+  fr='fr',
+  en='en'
+}
 export class LegalQuery {
   @ApiProperty({
     enum: LegalType,
@@ -39,4 +49,9 @@ export class LegalQuery {
   @IsEnum(LegalType)
   @IsOptional()
   type: LegalType;
+
+
+    @IsEnum(LegalLanguage)
+  @IsOptional()
+  langauage: LegalLanguage
 }
