@@ -31,10 +31,9 @@ export class UpdateContentDto {
 
 
 export enum LegalType {
-  TERMS = 'terms',
-  PRIVACY = 'privacy',
-  COOKIE = 'cookies',
-  LEGAL ='legal-notice',
+  TERMS = 'terms-of-sale',
+  TERMS_OF_USE='terms-of-use'
+  PRIVACY = 'privacy-policy',
 }
 export enum LegalLanguage {
   fr='fr',
