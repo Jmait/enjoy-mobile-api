@@ -34,6 +34,7 @@ export enum LegalType {
   TERMS = 'terms-of-sale',
   TERMS_OF_USE='terms-of-use',
   PRIVACY = 'privacy-policy',
+  NOTICE='legal-notice'
 }
 export enum LegalLanguage {
   fr='fr',
