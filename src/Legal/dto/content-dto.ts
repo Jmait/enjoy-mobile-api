@@ -8,6 +8,7 @@ export class UpdateContentDto {
     @IsNotEmpty()
      @ApiProperty()
     @IsString()
+    @IsOptional()
     @IsNotEmpty()
     title:string
      @ApiProperty()

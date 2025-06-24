@@ -33,6 +33,10 @@ export class LegalService {
       })
     }
 
+    async deleteContent(postId:string){
+      return await this.legalRepo.delete({postId})
+    }
+
   async getContent(query:LegalQuery){
      const qb=  this.legalRepo
      .createQueryBuilder('legal')
