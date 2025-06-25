@@ -144,5 +144,6 @@ export class CreateBookingDto {
   specialInstructions?: string;
 
   @ApiProperty()
+  @IsString()
   vehicleType: string;
 }
