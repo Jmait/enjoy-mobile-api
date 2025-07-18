@@ -92,7 +92,7 @@ export class TripBookingController {
 
    }
 
-    @Get('admin/booking/:bookingId/complete')
+    @Patch('admin/:bookingId/complete')
      async markTripAsCompleted(@Param('bookingId')bookingId:string){
     return await this.bookingService.markTripAsCompleted(bookingId);
    }
