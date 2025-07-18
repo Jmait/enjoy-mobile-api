@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, OnModuleInit } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { CreateBookingDto } from "./dto/bookings.dto";
@@ -242,7 +242,7 @@ this.emailService.sendEmail({
 })
       return await this.bookingRepository.update({bookingId}, {paymentStatus:PaymentStatus.PAID});
     } catch (error) {
-       throw new InternalServerErrorException('An error occured');  
+       throw new InternalServerErrorException('An error occured', error);  
     }
   }
 
@@ -331,7 +331,7 @@ const emailUser= `
 
       return {message:'Admin has been notified of the payment failure'}
     } catch (error) {
-       throw new InternalServerErrorException('An error occured');  
+       throw new InternalServerErrorException('An error occured', error);  
     }
   }
 
@@ -460,7 +460,6 @@ const emailUser= `
 }
 
 async usertripHistory(searchDto: SearchBookingDto, customerId:string) {
-  console.log(customerId)
     try {
           const { page = 1, limit = 10, } = searchDto;
           const today = startOfDay(new Date());
@@ -696,6 +695,20 @@ async sendRideDetails(dto:SendRideDetailsDto){
     })
   } catch (error) {
     throw new InternalServerErrorException('An error occured')
+  }
+}
+
+async markTripAsCompleted(bookingId:string){
+  try {
+     const booking = await this.bookingRepository.findOne({ where: { bookingId }, relations:['customer'] });
+
+  if (!booking) {
+    throw new NotFoundException('Booking not found or not owned by user');
+  }
+   return await this.bookingRepository.update({bookingId}, {status: BookingStatus.COMPLETED}) 
+  } catch (error) {
+   throw new InternalServerErrorException('Failed to update booking data', error);
+
   }
 }
 

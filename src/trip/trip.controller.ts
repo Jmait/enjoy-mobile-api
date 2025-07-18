@@ -92,6 +92,11 @@ export class TripBookingController {
 
    }
 
+    @Get('admin/booking/:bookingId/complete')
+     async markTripAsCompleted(@Param('bookingId')bookingId:string){
+    return await this.bookingService.markTripAsCompleted(bookingId);
+   }
+
 @Get('admin/all')
 async findAllBooking(@Query()dto:SearchBookingDto){
     return await this.bookingService.findAll(dto)
